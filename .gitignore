@@ -1,0 +1,7 @@
+# 运行产物
+__pycache__/
+*.log
+index_cache.json
+
+# 工作区协作文档
+对话记录.md

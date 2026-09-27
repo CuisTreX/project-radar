@@ -1,0 +1,18 @@
+{
+  "port": 8618,
+  "cache_ttl": 600,
+  "drives": ["F:"],
+  "workspaces": [
+    { "root": "F:\\Zcode", "agent": "ZCode", "color": "#8b7cf6", "app": "D:\\Programs\\Zcode\\ZCode.exe" },
+    { "root": "F:\\CodeX", "agent": "Codex", "color": "#f59e0b", "app": "" },
+    { "root": "F:\\WorkBuddy", "agent": "WorkBuddy", "color": "#22c55e", "app": "D:\\Programs\\WorkBuddy\\WorkBuddy.exe" },
+    { "root": "F:\\DSH", "agent": "DSH", "color": "#38bdf8", "app": "D:\\Programs\\DeepSeek Harness\\start-dsh.bat" }
+  ],
+  "launch_chain": ["app", "explorer"],
+  "type_dirs": {
+    "01-开发项目": "dev",
+    "02-创作项目": "cns",
+    "03-对话产出": "chat",
+    "99-归档": "arch"
+  }
+}
