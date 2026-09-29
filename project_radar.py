@@ -486,12 +486,20 @@ def do_launch(path):
         try:
             if act == "app":
                 app = w.get("app", "")
-                if app and os.path.exists(app):
-                    if app.lower().endswith(".bat"):
-                        subprocess.Popen(["cmd", "/c", app], cwd=root)
+                if app:
+                    if app.startswith("shell:"):
+                        # MSIX/商店应用（如 Codex 桌面端）：shell:AppsFolder\<AUMID>
+                        subprocess.Popen(["explorer.exe", app])
+                        done.append("启动 %s 客户端" % w["agent"])
+                    elif os.path.exists(app):
+                        if app.lower().endswith(".bat"):
+                            subprocess.Popen(["cmd", "/c", app], cwd=root)
+                        else:
+                            subprocess.Popen([app], cwd=root)
+                        done.append("启动 %s 客户端" % w["agent"])
                     else:
-                        subprocess.Popen([app], cwd=root)
-                    done.append("启动 %s 客户端" % w["agent"])
+                        log("客户端路径不存在: %s（%s）" % (app, w["agent"]))
+                        done.append("%s 客户端路径无效，已跳过" % w["agent"])
             elif act == "explorer":
                 subprocess.Popen("explorer /select,\"%s\"" % path, shell=True)
                 done.append("资源管理器定位")

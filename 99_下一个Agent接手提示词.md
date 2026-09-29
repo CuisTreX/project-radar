@@ -38,9 +38,16 @@ F 盘多 Agent 工作区（Zcode / CodeX / WorkBuddy / DSH）的项目统一查�
 2. ZCode CLI 的沙箱 Bash 会话里 `cscript` / `cmd start xxx.lnk` 会被拒绝（Access denied /
    内存资源错误），不代表真实桌面双击有问题；验证冷启动用 PowerShell
    `Start-Process pythonw ...` 或 Computer Use 真实 UI 路径（Win+R 输入 lnk 路径回车）。
-3. Codex 的桌面快捷方式 target 为空，`config.json` 里 Codex 的 `app` 留空；拿到真实 exe 路径后补上。
+3. **客户端启动两种形式**（`config.json` 的 `app`）：普通 exe 直接填路径；商店/MSIX 应用填
+   `shell:AppsFolder\<AUMID>`（查 AUMID：`Get-StartApps`）。Codex 桌面端 = MSIX 包
+   `OpenAI.Codex`（进程名 ChatGPT），AUMID `OpenAI.Codex_2p2nqsd0c76g0!App`，已配好并实测。
+   桌面 `Codex.lnk` 本身是坏的（target 空），别再从它找路径。
 4. 浏览器自动化里 IAB `screenshot({clip})` 有横向拼接伪影，验证布局一律用全页截图（DOM 计数为准）。
 5. **Pillow 合成半透明**：`Image.paste` 是像素替换不是合成；`ImageDraw.Draw(img, "RGBA")`
    混合模式会破坏目标 alpha 通道。半透明元素要画在独立透明图层，最后 `Image.alpha_composite`。
-6. pywebview 模式别忘 `server.serve_forever()` 要放进 daemon 线程（gui_run 不调它服务就不会 accept）。
-7. 多行 `python -c "..."` 在本机 Bash 工具里偶尔静默不执行，复杂脚本一律写成 .py 文件再跑。
+6. pywebview 模式别忘 `server.serve_forever()` 要放进 daemon 线程（gui_run 不调它服务就不会 accept）；
+   首次索引构建 pythonw 下 10-15 秒，已用启动预热 + `/api/status` ready 标志规避。
+7. 多行 `python -c "..."` 在本机 Bash 工具里偶尔静默不执行，复杂脚本一律写成 .py 文件再跑；
+   PowerShell 含 `$` 的命令同样会被 Git Bash 吞掉 `$`，一律写成 .ps1 文件执行。
+8. 托盘图标 Win11 默认折叠在溢出区，IsPromotable 注册表 0/1 均无法编程常显（已实测），
+   要常显让用户手动：设置→个性化→任务栏→其他系统托盘图标→pythonw.exe。

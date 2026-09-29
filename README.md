@@ -20,16 +20,20 @@ F 盘同时有多个 Agent 工作区（`F:\Zcode`、`F:\CodeX`、`F:\WorkBuddy`�
 - **关闭窗口 ≠ 退出**：主窗口点 X 只是缩到托盘；真正退出走托盘右键菜单。
 - 搜索语法：空格分隔多关键词（AND）；支持中文子串、拼音全拼（`guancai`→棺材）、拼音首字母（`dfjk`→电费监控）、编号（`013`）、日期数字（`0927`）、英文子序列（`pwmx`→PowerMax）。
 - 主窗口键盘：`↑↓` 选择，`Enter` 启动，`Esc` 清空。
-- 主窗口卡片按钮：**🚀 启动** = 链式启动（启动 Agent 客户端 → 资源管理器定位项目）；**📂** = 仅定位；**📄** = 打开 README / 对话记录。
+- 主窗口卡片按钮：**🚀 启动** = 只启动 Agent 客户端（不再弹资源管理器）；**📂** = 资源管理器定位项目目录；**📄** = 打开 README / 对话记录。
+- 速查窗：点条目 = 定位（等价 📂）；条目右侧 🚀 = 只启动客户端。
 
 ## 工作区与启动链配置
 
 编辑 `config.json`：
 
-- `workspaces`：每个工作区的 `root` / `agent` / `color` / `app`（Agent 客户端 exe，可空）。
+- `workspaces`：每个工作区的 `root` / `agent` / `color` / `app`（Agent 客户端，可空）。
+  普通程序填 exe 路径（`.bat` 自动走 cmd）；**商店/MSIX 应用**填 `shell:AppsFolder\<AUMID>`
+  （查 AUMID：PowerShell `Get-StartApps`，如 Codex 桌面端 = `shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App`）。
   未登记的工作区若根目录含 `AGENTS.md` 会被自动发现（agent 名取自 `04-XX工作区` 目录名）。
-- `launch_chain`：链式启动动作序列：`"app"`（启动客户端）、`"explorer"`（定位目录）、
+- `launch_chain`：链式启动动作序列：`"app"`（只启动客户端）、`"explorer"`（定位目录）、
   `"open:<路径模板>"`、`"cmd:<命令模板>"`（支持 `{dir}` `{workspace}` 占位符）。
+  默认 `["app"]`——只要启动客户端；想"启动 + 定位"改回 `["app", "explorer"]`。
 - 改完杀掉 pythonw 进程（或托盘退出）后重新双击生效。
 
 ## 文件说明
@@ -69,7 +73,8 @@ F 盘同时有多个 Agent 工作区（`F:\Zcode`、`F:\CodeX`、`F:\WorkBuddy`�
 
 - Win11 编程方式无法可靠把托盘图标"常驻任务栏"（IsPromotable 0/1 实测均不改变折叠行为），
   默认折叠在 `^` 溢出区；要常显请手动：设置 → 个性化 → 任务栏 → 其他系统托盘图标 → 打开 pythonw.exe。
-- Codex 客户端桌面快捷方式 target 为空，`config.json` 中其 `app` 暂留空（只做目录定位）；确认 exe 路径后补上。
+- 桌面 `Codex.lnk` 本身已损坏（target 为空）；Codex 桌面端是 MSIX 包（进程名 ChatGPT），
+  雷达通过 `shell:AppsFolder\OpenAI.Codex_2p2nqsd0c76g0!App` 启动，已实测弹出客户端窗口。
 - `F:\DSH` 尚未初始化，初始化出分类目录后会被自动发现。
 - pywebview / Pillow / pypinyin 缺失时自动降级（无窗口开默认浏览器、无拼音），主功能不受影响。
 - pythonw 下首次索引构建约 10-15 秒（pypinyin 字典冷读 + WebView2 初始化抢资源），
